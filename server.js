@@ -2,15 +2,29 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+
 import roomRoutes from "./routes/rooms.js";
 import roomReservations from "./routes/reservations.js";
 
 dotenv.config();
 const app = express();
 
+// Lista de orígenes permitidos
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://cheerful-pavlova-cc42bf.netlify.app",
+];
+
 // Configuración de CORS
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: function (origin, callback) {
+    // Permitir peticiones sin origin (como Postman)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("No permitido por CORS"));
+    }
+  },
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
@@ -24,7 +38,7 @@ app.use(express.json());
 app.use("/api/rooms", roomRoutes);
 app.use("/api/reservations", roomReservations);
 
-// Conexión a MongoDB
+// Conexión a MongoDB y levantamiento del servidor
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
