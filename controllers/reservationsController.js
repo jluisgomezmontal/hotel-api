@@ -90,39 +90,32 @@ export const updateReservationStatus = async (req, res) => {
 
 export const getAvailableRooms = async (req, res) => {
   try {
-    const { checkIn, checkOut } = req.query;
+    const now = new Date();
 
-    if (!checkIn || !checkOut) {
-      return res
-        .status(400)
-        .json({ message: "Debes proporcionar checkIn y checkOut." });
-    }
+    // Establece el inicio del día (hoy a las 00:00)
+    const todayStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
 
-    const checkInDate = new Date(checkIn);
-    const checkOutDate = new Date(checkOut);
+    // Establece el final del día (hoy a las 23:59:59.999)
+    const todayEnd = new Date(todayStart);
+    todayEnd.setDate(todayEnd.getDate() + 1);
 
-    if (checkInDate >= checkOutDate) {
-      return res.status(400).json({ message: "Fechas inválidas." });
-    }
-
-    // Buscar reservaciones que traslapen con el rango
+    // Buscar reservaciones que estén activas en cualquier momento del día de hoy
     const overlappingReservations = await Reservation.find({
-      $or: [
-        {
-          checkIn: { $lt: checkOutDate },
-          checkOut: { $gt: checkInDate },
-        },
-      ],
+      checkIn: { $lt: todayEnd },
+      checkOut: { $gt: todayStart },
       status: { $in: ["pending", "confirmed"] },
     });
 
-    // Obtener números de habitaciones reservadas
     const reservedRoomNumbers = overlappingReservations.map(
       (r) => r.roomNumber
     );
 
-    const reservedRooms = overlappingReservations.map((r) => r);
-    // Filtrar habitaciones que no están reservadas
+    const reservedRooms = overlappingReservations;
+
     const availableRooms = await Room.find({
       number: { $nin: reservedRoomNumbers },
     });
