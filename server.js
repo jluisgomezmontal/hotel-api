@@ -13,6 +13,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "https://cheerful-pavlova-cc42bf.netlify.app",
+  "https://hoteles-admin-acapulco.netlify.app",
 ];
 
 // Configuración de CORS
