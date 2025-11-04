@@ -5,6 +5,9 @@ import cors from "cors";
 
 import roomRoutes from "./routes/rooms.js";
 import roomReservations from "./routes/reservations.js";
+import guestRoutes from "./routes/guests.js";
+import paymentRoutes from "./routes/payments.js";
+import reportRoutes from "./routes/reports.js";
 
 dotenv.config();
 const app = express();
@@ -12,6 +15,7 @@ const app = express();
 // Lista de orígenes permitidos
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://localhost:3001",
   "https://cheerful-pavlova-cc42bf.netlify.app",
   "https://hoteles-admin-acapulco.netlify.app",
 ];
@@ -38,6 +42,9 @@ app.use(express.json());
 // Rutas
 app.use("/api/rooms", roomRoutes);
 app.use("/api/reservations", roomReservations);
+app.use("/api/guests", guestRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/reports", reportRoutes);
 
 // Conexión a MongoDB y levantamiento del servidor
 mongoose
