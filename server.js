@@ -15,7 +15,7 @@ const app = express();
 // Lista de orígenes permitidos
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://mi-hotel-acapulco.vercel.app/",
+  "https://mi-hotel-acapulco.vercel.app",
   "http://localhost:3001",
   "https://cheerful-pavlova-cc42bf.netlify.app",
   "https://hoteles-admin-acapulco.netlify.app",
