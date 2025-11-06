@@ -1,6 +1,5 @@
 import express from "express";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 import cors from "cors";
 
 import roomRoutes from "./routes/rooms.js";
@@ -8,8 +7,10 @@ import roomReservations from "./routes/reservations.js";
 import guestRoutes from "./routes/guests.js";
 import paymentRoutes from "./routes/payments.js";
 import reportRoutes from "./routes/reports.js";
+import authRoutes from "./routes/auth.js";
 
-dotenv.config();
+import { errorHandler } from "./middlewares/errorHandler.js";
+import { MONGO_URI, PORT } from "./config/env.js";
 const app = express();
 
 // Lista de orígenes permitidos
@@ -41,21 +42,23 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Rutas
+app.use("/api/auth", authRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/reservations", roomReservations);
 app.use("/api/guests", guestRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/reports", reportRoutes);
 
+// Manejo centralizado de errores
+app.use(errorHandler);
+
 // Conexión a MongoDB y levantamiento del servidor
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(MONGO_URI)
   .then(() => {
     console.log("MongoDB conectado");
-    app.listen(process.env.PORT || 3000, () => {
-      console.log(
-        `Servidor corriendo en el puerto ${process.env.PORT || 3000}`
-      );
+    app.listen(PORT, () => {
+      console.log(`Servidor corriendo en el puerto ${PORT}`);
     });
   })
   .catch((err) => console.error("Error de conexión:", err));

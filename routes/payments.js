@@ -5,8 +5,11 @@ import {
   getPaymentById,
   getPaymentsByReservation,
 } from "../controllers/paymentController.js";
+import { authenticate } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
+
+router.use(authenticate);
 
 router.get("/", getPayments);
 router.get("/reservation/:reservationId", getPaymentsByReservation);

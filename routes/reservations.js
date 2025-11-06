@@ -9,8 +9,11 @@ import {
   updateReservation,
   updateReservationStatus,
 } from "../controllers/reservationsController.js";
+import { authenticate } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
+
+router.use(authenticate);
 
 router.get("/", getReservations);
 router.get("/rooms/available", getAvailableRooms);

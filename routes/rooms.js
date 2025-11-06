@@ -8,8 +8,11 @@ import {
   createRoom,
   deleteRoom,
 } from "../controllers/roomController.js";
+import { authenticate } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
+
+router.use(authenticate);
 
 router.get("/", getAllRooms);
 router.get("/search", searchRooms);

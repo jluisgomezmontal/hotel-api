@@ -6,8 +6,11 @@ import {
   updateGuest,
   deleteGuest,
 } from "../controllers/guestController.js";
+import { authenticate } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
+
+router.use(authenticate);
 
 router.get("/", getGuests);
 router.get("/:id", getGuestById);
