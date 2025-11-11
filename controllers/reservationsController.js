@@ -412,26 +412,27 @@ export const updateReservationStatus = async (req, res) => {
     reservation.status = status;
     await reservation.save();
 
-    const blockingStatuses = ["confirmed", "checked-in"];
+    const occupancyStatuses = ["confirmed", "checked-in"];
+    const releaseStatuses = ["cancelled", "completed"];
     const roomNumber = reservation.roomNumber;
 
     if (roomNumber !== undefined && roomNumber !== null) {
       const room = await Room.findOne({ number: roomNumber });
 
       if (room) {
-        if (blockingStatuses.includes(status)) {
+        if (occupancyStatuses.includes(status)) {
           if (room.isAvailable) {
             room.isAvailable = false;
             await room.save();
           }
-        } else {
-          const otherBlockingReservationExists = await Reservation.exists({
+        } else if (releaseStatuses.includes(status)) {
+          const otherActiveReservationExists = await Reservation.exists({
             _id: { $ne: reservation._id },
             roomNumber,
-            status: { $in: blockingStatuses },
+            status: { $in: occupancyStatuses },
           });
 
-          if (!otherBlockingReservationExists && room.isAvailable !== true) {
+          if (!otherActiveReservationExists && room.isAvailable === false) {
             room.isAvailable = true;
             await room.save();
           }
